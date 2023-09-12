@@ -1,31 +1,51 @@
-#include<unordered_map>
+void mergeArray(vector<int>& array, const int first, const int mid, const int last){
 
-vector<pair<int, int>> twoSum(vector<int>& arr, int target, int n)
-{
-	unordered_map<int, int> hashMap;
-	vector<pair<int, int>> ans;
+    const int sizeA = mid - first + 1;
+    const int sizeB = last - mid;
+    int indexC = first;
 
-	for(int i = 0; i < n; i++)
-	{
-        hashMap[arr[i]]++;
-		if(target - arr[i] == arr[i])
-		{
-			// Valid pair will only exist if frequency of arr[i] is greater than 1.
-			if(hashMap[arr[i]] > 1)
-			{
-				ans.push_back({arr[i], arr[i]});
-				hashMap[arr[i]] -= 2;
-			}
-		}
-		else
-			if(hashMap[arr[i]] > 0 && hashMap[target - arr[i]] > 0)
-			{
-				ans.push_back({arr[i], target - arr[i]});
-				hashMap[arr[i]] -= 1;
-				hashMap[target - arr[i]] -= 1;
-			}
-		}
-	}
-	if(ans.size() == 0) ans.push_back({-1, -1});
-	return ans;
+    // create two temp arrays
+    int* arrA = new int[sizeA];
+    int* arrB = new int[sizeB]; 
+
+    for(int i = 0 ; i < sizeA ; i++)
+        arrA[i] = array[first + i];
+    for(int i = 0 ; i < sizeB ; i++)
+        arrB[i] = array[mid + 1 + i];
+
+    int indexA, indexB;
+    indexA = indexB = 0;   
+    //Merge array[arrA .. arrB]
+    while(indexA < sizeA && indexB < sizeB){
+        if(arrA[indexA] <= arrB[indexB] || indexB == sizeB)
+            array[indexC++] = arrA[indexA++];
+        else  
+            array[indexC++] = arrB[indexB++];
+    }
+    //add the remaining elements of arrA and arrB
+    while(indexA < sizeA)
+        array[indexC++] = arrA[indexA++];
+    while(indexB < sizeB)
+        array[indexC++] = arrB[indexB++];
+
+    delete[] arrA;
+    delete[] arrB;
+}
+
+//Divides array into 2 {Recursive}
+void mergeSortX(vector<int>& array, const int first, const int last){
+
+    if(first >= last)
+        return;
+
+    int mid = first + (last - first)/2;
+
+    mergeSortX(array, first, mid);
+    mergeSortX(array, mid + 1, last);
+    mergeArray(array, first, mid, last);
+}
+
+void mergeSort(vector < int > & arr, int n) {
+    if(n == 0 || n == 1) return;
+    mergeSortX(arr, 0, n-1);
 }
